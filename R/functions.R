@@ -73,6 +73,7 @@ seurat2anndata <- function(obj, outFile = NULL, assay = "RNA", main_layer = "dat
     },
     drop_single_values = drop_single_values
   )
+  rownames(var) <- rownames(Seurat::GetAssay(obj, assay = assay)@features@.Data)
 
   obsm <- NULL
   reductions <- names(obj@reductions)
