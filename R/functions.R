@@ -59,7 +59,7 @@ seurat2anndata <- function(obj, outFile = NULL, assay = "RNA", main_layer = "dat
     obj <- Seurat::UpdateSeuratObject(object = obj)
   }
 
-  X <- Seurat::GetAssayData(object = obj, assay = assay, slot = main_layer)
+  X <- Seurat::GetAssayData(object = obj, assay = assay, layer = main_layer)
 
   obs <- .regularise_df(obj@meta.data, drop_single_values = drop_single_values)
 
@@ -78,7 +78,7 @@ seurat2anndata <- function(obj, outFile = NULL, assay = "RNA", main_layer = "dat
 
   layers <- list()
   for (layer in transfer_layers) {
-    mat <- Seurat::GetAssayData(object = obj, assay = assay, slot = layer)
+    mat <- Seurat::GetAssayData(object = obj, assay = assay, layer = layer)
     if (all(dim(mat) == dim(X))) layers[[layer]] <- Matrix::t(mat)
   }
 
@@ -404,7 +404,7 @@ anndata2seurat <- function(inFile, outFile = NULL, main_layer = "counts", assay 
 
     if (main_layer == "scale.data" && !is.null(raw_X)) {
       assays <- list(Seurat::CreateAssayObject(data = raw_X))
-      assays[[1]] <- Seurat::SetAssayData(assays[[1]], slot = "scale.data", new.data = X)
+      assays[[1]] <- Seurat::SetAssayData(assays[[1]], layer = "scale.data", new.data = X)
       message("X -> scale.data; raw.X -> data")
     } else if (main_layer == "data" && !is.null(raw_X)) {
       if (nrow(X) != nrow(raw_X)) {
@@ -413,7 +413,7 @@ anndata2seurat <- function(inFile, outFile = NULL, main_layer = "counts", assay 
         X <- X[rownames(raw_X), , drop = F]
       }
       assays <- list(Seurat::CreateAssayObject(counts = raw_X))
-      assays[[1]] <- Seurat::SetAssayData(assays[[1]], slot = "data", new.data = X)
+      assays[[1]] <- Seurat::SetAssayData(assays[[1]], layer = "data", new.data = X)
       message("X -> data; raw.X -> counts")
     } else if (main_layer == "counts") {
       assays <- list(Seurat::CreateAssayObject(counts = X))
